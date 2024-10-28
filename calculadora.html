@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Calculadora</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: Arial, sans-serif;
+    }
+
+    body {
+      display: flex;
+      flex-direction: column; /* Cambia a columna para apilar elementos */
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      background: #282c34;
+      overflow: hidden;
+      transition: background 0.5s;
+    }
+
+    .calculator {
+      width: 300px;
+      background: #333;
+      border-radius: 10px;
+      overflow: hidden;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+      animation: fadeIn 0.8s ease;
+    }
+
+    .display {
+      background: #444;
+      color: #fff;
+      font-size: 2em;
+      text-align: right;
+      padding: 20px;
+      border-bottom: 2px solid #555;
+    }
+
+    .buttons {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+    }
+
+    .btn {
+      padding: 20px;
+      font-size: 1.5em;
+      background: #555;
+      color: #fff;
+      border: 1px solid #666;
+      cursor: pointer;
+      transition: background 0.3s, transform 0.1s;
+      animation: popUp 0.2s ease forwards;
+      opacity: 0;
+    }
+
+    .btn:nth-child(n) {
+      animation-delay: calc(0.05s * var(--i));
+    }
+
+    .btn:active {
+      transform: scale(0.95);
+    }
+
+    .equal {
+      background: #ff9800;
+    }
+
+    .btn:hover {
+      background: #777;
+      box-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+    }
+
+    .equal:hover {
+      background: #ffa726;
+    }
+
+    .light {
+      background: #f9f9f9;
+    }
+
+    .light .calculator {
+      background: #e0e0e0;
+    }
+
+    .light .display {
+      background: #ccc;
+      color: #000;
+      border-bottom: 2px solid #bbb;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: scale(0.9); }
+      to { opacity: 1; transform: scale(1); }
+    }
+
+    @keyframes popUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .fade-in {
+      animation: fadeInText 0.3s ease-in;
+    }
+
+    @keyframes fadeInText {
+      from { opacity: 0; transform: scale(1.1); }
+      to { opacity: 1; transform: scale(1); }
+    }
+
+    .bounce {
+      animation: bounceEffect 0.3s ease;
+    }
+
+    @keyframes bounceEffect {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-10px); }
+    }
+
+    .history {
+      background: #666;
+      color: #fff;
+      font-size: 1em;
+      padding: 10px;
+      border-top: 2px solid #555;
+      max-height: 100px;
+      overflow-y: auto;
+    }
+
+    .theme-button {
+      margin: 10px;
+      padding: 10px 20px;
+      font-size: 1.2em;
+      background: #007BFF;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+
+    .theme-button:hover {
+      background: #0056b3;
+    }
+
+    /* Estilos para el cuadro de nombres */
+    .student-names {
+      margin-top: 20px;
+      padding: 15px;
+      background: #444;
+      color: #fff;
+      border-radius: 10px;
+      box-shadow: 0 5px 10px rgba(0, 0, 0, 0.5);
+      text-align: center;
+      width: 300px; /* Mantener el ancho igual al de la calculadora */
+    }
+  </style>
+</head>
+<body>
+  <button class="theme-button" onclick="toggleTheme()">Tema Oscuro</button>
+
+  <div class="calculator">
+    <div class="display">
+      <span id="display">0</span>
+    </div>
+    <div class="buttons">
+      <button class="btn" onclick="clearDisplay()" style="--i:0">C</button>
+      <button class="btn" onclick="appendToDisplay('/')" style="--i:1">÷</button>
+      <button class="btn" onclick="appendToDisplay('*')" style="--i:2">×</button>
+      <button class="btn" onclick="appendToDisplay('-')" style="--i:3">−</button>
+      
+      <button class="btn" onclick="appendToDisplay('7')" style="--i:4">7</button>
+      <button class="btn" onclick="appendToDisplay('8')" style="--i:5">8</button>
+      <button class="btn" onclick="appendToDisplay('9')" style="--i:6">9</button>
+      <button class="btn" onclick="appendToDisplay('+')" style="--i:7">+</button>
+      
+      <button class="btn" onclick="appendToDisplay('4')" style="--i:8">4</button>
+      <button class="btn" onclick="appendToDisplay('5')" style="--i:9">5</button>
+      <button class="btn" onclick="appendToDisplay('6')" style="--i:10">6</button>
+      <button class="btn equal" onclick="calculateResult()" style="--i:11">=</button>
+      
+      <button class="btn" onclick="appendToDisplay('1')" style="--i:12">1</button>
+      <button class="btn" onclick="appendToDisplay('2')" style="--i:13">2</button>
+      <button class="btn" onclick="appendToDisplay('3')" style="--i:14">3</button>
+      <button class="btn" onclick="appendToDisplay('0')" style="--i:15">0</button>
+    </div>
+    <div class="history" id="history"></div>
+  </div>
+
+  <!-- Cuadro para los nombres de los estudiantes -->
+  <div class="student-names">
+    <h3>Estudiantes:</h3>
+    <p>Manuel Vargas</p>
+    <p>Isaac Martinez</p>
+    <p>Andrés Buelvas</p>
+    <p>Jean Alvarez</p>
+  </div>
+
+  <script>
+    let displayValue = '0';
+    let history = [];
+
+    function updateDisplay() {
+      const display = document.getElementById("display");
+      display.innerText = displayValue;
+
+      display.classList.remove("fade-in");
+      void display.offsetWidth; // Reinicia la animación
+      display.classList.add("fade-in");
+    }
+
+    function clearDisplay() {
+      displayValue = '0';
+      updateDisplay();
+    }
+
+    function appendToDisplay(value) {
+      new Audio('https://www.soundjay.com/buttons/sounds/button-19.mp3').play();
+
+      if (displayValue === '0') {
+        displayValue = value;
+      } else {
+        displayValue += value;
+      }
+      updateDisplay();
+    }
+
+    function calculateResult() {
+      try {
+        displayValue = eval(displayValue).toString();
+        addToHistory(displayValue);
+      } catch (error) {
+        displayValue = "Entrada Inválida";
+      }
+      updateDisplay();
+    }
+
+    function addToHistory(result) {
+      const historyDiv = document.getElementById("history");
+      history.push(result);
+      historyDiv.innerHTML = history.join('<br>');
+    }
+
+    function toggleTheme() {
+      document.body.classList.toggle('light');
+      const isLight = document.body.classList.contains('light');
+      const btnTheme = document.querySelector(".theme-button");
+      btnTheme.innerText = isLight ? 'Tema Oscuro' : 'Tema Claro';
+    }
+
+    document.querySelectorAll(".btn").forEach(button => {
+      button.addEventListener("click", () => {
+        button.classList.add("bounce");
+        setTimeout(() => button.classList.remove("bounce"), 200);
+      });
+    });
+
+    document.addEventListener('keydown', function(event) {
+      const key = event.key;
+      if (!isNaN(key) || "+-*/".includes(key)) {
+        appendToDisplay(key);
+      } else if (key === "Enter") {
+        calculateResult();
+      } else if (key === "Backspace") {
+        clearDisplay();
+      }
+    });
+  </script>
+</body>
+</html>
